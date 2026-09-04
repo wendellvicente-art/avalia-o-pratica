@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Futebol</title>
+    <title>Arena Futebol News</title>
     <style>
         /* Variáveis de Cores para os Temas */
         :root[data-theme="light"] {
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
             --text-color: #1a1a1a;
-            --primary-color: #2e7d32; /* Verde Gramado */
-            --accent-color: #fbc02d;  /* Amarelo Bola */
+            --text-muted: #666666;
+            --primary-color: #1b5e20; /* Verde Gramado Escuro */
+            --accent-color: #fbc02d;  /* Amarelo Ouro */
+            --border-color: #e0e0e0;
             --toggle-btn-bg: #1a1a1a;
             --toggle-btn-text: #ffffff;
         }
@@ -20,8 +22,10 @@
             --bg-color: #0b0f12;      /* Preto Estádio Noturno */
             --card-bg: #161c22;
             --text-color: #f4f7f6;
-            --primary-color: #4caf50; /* Verde Brilhante */
+            --text-muted: #a0aab2;
+            --primary-color: #4caf50; /* Verde Vivo */
             --accent-color: #ffff00;
+            --border-color: #2c353d;
             --toggle-btn-bg: #ffffff;
             --toggle-btn-text: #1a1a1a;
         }
@@ -31,13 +35,14 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
+            line-height: 1.6;
         }
 
         /* Cabeçalho */
@@ -48,14 +53,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        h1 {
-            font-size: 1.5rem;
+        .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Botão Alternador de Tema */
         .theme-toggle-btn {
             background-color: var(--toggle-btn-bg);
             color: var(--toggle-btn-text);
@@ -64,123 +75,240 @@
             font-weight: bold;
             cursor: pointer;
             border-radius: 20px;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 0.85rem;
         }
 
-        .theme-toggle-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Banner Principal */
-        .hero {
-            text-align: center;
-            padding: 3rem 1rem;
-        }
-
-        .hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        /* Grid de Imagens (Galeria) */
-        .gallery {
+        /* Container Principal */
+        .container {
             max-width: 1200px;
-            margin: 0 auto padding;
-            padding: 0 2rem 4rem 2rem;
+            margin: 0 auto;
+            padding: 2rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 2fr 1fr;
             gap: 2rem;
         }
 
-        .card {
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Títulos de Seções */
+        section h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        /* Cards de Notícias */
+        .news-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .news-card {
             background-color: var(--card-bg);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
         }
 
-        .card img {
+        .news-card img {
             width: 100%;
-            height: 220px;
+            height: 300px;
             object-fit: cover;
             display: block;
         }
 
-        .card-content {
+        .news-content {
             padding: 1.5rem;
         }
 
-        .card-content h3 {
+        .news-content h3 {
+            font-size: 1.4rem;
             margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .news-content p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Sistema de Feedback (Like/Dislike) */
+        .feedback-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .btn-feedback {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .btn-feedback:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-feedback.liked {
+            background-color: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .btn-feedback.disliked {
+            background-color: #c62828;
+            color: white;
+            border-color: #c62828;
+        }
+
+        /* Barra Lateral (Sidebar) */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-box {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-box h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
             color: var(--primary-color);
         }
 
-        .card-content p {
-            font-size: 0.95rem;
-            line-height: 1.4;
-            opacity: 0.8;
+        /* Próximos Jogos */
+        .match-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .match-row:last-child {
+            border-bottom: none;
+        }
+
+        .team {
+            font-weight: 600;
+            width: 40%;
+        }
+        .team.right { text-align: right; }
+        .vs { color: var(--text-muted); font-size: 0.8rem; }
+
+        /* Tabela Simplificada */
+        .table-football {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .table-football th, .table-football td {
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .table-football th {
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .table-football tr {
+            border-bottom: 1px solid var(--border-color);
         }
     </style>
 </head>
 <body>
 
-    <!-- Cabeçalho com o botão de troca de modo -->
+    <!-- Cabeçalho -->
     <header>
-        <h1>⚽ Arena Futebol Club</h1>
-        <button class="theme-toggle-btn" id="themeToggle">Alternar Modo</button>
+        <div class="logo">⚽ Arena Futebol News</div>
+        <button class="theme-toggle-btn" id="themeToggle">Modo Escuro</button>
     </header>
 
-    <!-- Seção de Destaque -->
-    <section class="hero">
-        <h2>O Templo do Futebol</h2>
-        <p>Acompanhe os melhores momentos, estádios e a paixão pelo esporte mais popular do mundo.</p>
-    </section>
+    <!-- Layout Principal -->
+    <div class="container">
+        
+        <!-- Coluna de Notícias -->
+        <main class="news-grid">
+            <section>
+                <h2>Principais Notícias</h2>
+                
+                <!-- Notícia 1 -->
+                <div class="news-card" data-id="noticia-1">
+                    <img src="https://unsplash.com" alt="Estádio iluminado">
+                    <div class="news-content">
+                        <h3>O Legado dos Grandes Estádios Europeus e a Nova Era Tecnológica</h3>
+                        <p>As novas arenas inteligentes prometem revolucionar a experiência do torcedor, trazendo conectividade de última geração, telões interativos em 360° e gramados retráteis ecologicamente sustentáveis.</p>
+                        
+                        <div class="feedback-container">
+                            <button class="btn-feedback btn-like">👍 <span class="count">24</span></button>
+                            <button class="btn-feedback btn-dislike">👎 <span class="count">3</span></button>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Galeria com Imagens Temáticas -->
-    <main class="gallery">
-        <div class="card">
-            <img src="https://unsplash.com" alt="Estádio de futebol lotado">
-            <div class="card-content">
-                <h3>Grandes Estádios</h3>
-                <p>A atmosfera eletrizante das arquibancadas em dias de decisões e clássicos históricos.</p>
+                <!-- Notícia 2 -->
+                <div class="news-card" data-id="noticia-2" style="margin-top: 2rem;">
+                    <img src="https://unsplash.com" alt="Bola no gol">
+                    <div class="news-content">
+                        <h3>Análise Tática: Como os Novos Técnicos Mudaram a Dinâmica das Linhas de Defesa</h3>
+                        <p>Especialistas debatem como a compactação defensiva extrema e a saída de bola curta usando o goleiro se tornaram os pilares indispensáveis para vencer os campeonatos mais disputados do mundo.</p>
+                        
+                        <div class="feedback-container">
+                            <button class="btn-feedback btn-like">👍 <span class="count">42</span></button>
+                            <button class="btn-feedback btn-dislike">👎 <span class="count">1</span></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Barra Lateral -->
+        <aside class="sidebar">
+            <!-- Bloco de Próximos Jogos -->
+            <div class="sidebar-box">
+                <h3>📅 Próximos Jogos</h3>
+                <div class="match-row">
+                    <span class="team">Madrid</span>
+                    <span class="vs">16:00</span>
+                    <span class="team right">Munich</span>
+                </div>
+                <div class="match-row">
+                    <span class="team">Milano</span>
+                    <span class="vs">17:45</span>
+                    <span class="team right">London</span>
+                </div>
+                <div class="match-row">
+                    <span class="team">Paris</span>
+                    <span class="vs">Amanhã</span>
+                    <span class="team right">Barcelona</span>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <img src="https://unsplash.com" alt="Bola de futebol na rede">
-            <div class="card-content">
-                <h3>A Hora do Gol</h3>
-                <p>O momento exato em que a bola balança a rede e o grito de gol ecoa pelo estádio.</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://unsplash.com" alt="Chuteira e bola no campo de futebol">
-            <div class="card-content">
-                <h3>Treinamento e Foco</h3>
-                <p>A preparação milimétrica dos atletas nos bastidores para alcançar a glória nos campeonatos.</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- JavaScript para a Alternância de Modo -->
-    <script>
-        const themeToggleBtn = document.getElementById('themeToggle');
-        const htmlElement = document.documentElement;
-
-        themeToggleBtn.addEventListener('click', () => {
-            // Verifica o tema atual e faz a inversão
-            const currentTheme = htmlElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            // Aplica o novo tema no HTML
-            htmlElement.setAttribute('data-theme', newTheme);
-            
-            // Altera o texto visual do botão para ajudar o usuário
-            themeToggleBtn.textContent = newTheme === 'light' ? 'Modo Escuro' : 'Modo Claro';
-        });
-    </script>
-</body>
-</html>
